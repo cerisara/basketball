@@ -6,9 +6,12 @@ import android.graphics.Paint;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.os.CountDownTimer;
 
 public class Surface extends View {
   public int realw,realh;
+  private boolean selected=false;
+  public boolean touchable=true;
 
   public Surface(Context c) {
     super(c);
@@ -18,6 +21,17 @@ public class Surface extends View {
   }
   public Surface(Context c, AttributeSet attribs, int defStyle) {
     super(c,attribs,defStyle);
+  }
+
+  public void invertSelected() {
+    touchable=false;
+    selected = !selected;
+    new CountDownTimer(500,500) {
+      public void onTick(long t) {}
+      public void onFinish() {
+        touchable=true;
+      }
+    }.start();
   }
 
   @Override
@@ -83,7 +97,8 @@ public class Surface extends View {
     tPaint.setColor(Color.BLACK);
     tPaint.setTextSize(40);
     Paint bPaint = new Paint();
-    bPaint.setColor(Color.WHITE);
+    if (selected) bPaint.setColor(Color.WHITE);
+    else bPaint.setColor(Color.YELLOW);
     int len=30;
 
     int y=(int)((float)haut*0.9);

@@ -61,9 +61,9 @@
       android:layout_below="@+id/joueurs"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_above="@+id/menus"
-      android:id="@+id/surfaces" >
+      android:layout_above="@+id/menus" >
     <fr.xtof.basketball.Surface 
+      android:id="@+id/surfaces"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
     />

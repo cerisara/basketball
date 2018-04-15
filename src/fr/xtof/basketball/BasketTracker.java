@@ -22,6 +22,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import android.view.View.OnTouchListener;
+import android.view.MotionEvent;
 
 public class BasketTracker extends FragmentActivity {
     public static BasketTracker main;
@@ -33,6 +35,19 @@ public class BasketTracker extends FragmentActivity {
         super.onCreate(savedInstanceState);
         main=this;
         setContentView(R.layout.main);
+
+        final Surface canvas = (Surface)findViewById(R.id.surfaces);
+        canvas.setOnTouchListener(new OnTouchListener() {
+          @Override
+          public boolean onTouch(View v, MotionEvent event) {
+            if (canvas.touchable) {
+              canvas.invertSelected();
+              canvas.invalidate();
+            }
+            //if((event.getX(0)>=160) && 
+            return true;
+          }
+        });
     }
 
     public static void msg(final String s) {
