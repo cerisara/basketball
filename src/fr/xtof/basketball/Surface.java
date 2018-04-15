@@ -13,6 +13,15 @@ public class Surface extends View {
   private int[][] limits;
   private boolean wasFling=false;
   public int pts0=0, pts1=0;
+  // type d'ecran a afficher
+  // 0 = shoots + fautes
+  // 1 = selection joueurs team 0
+  // 2 = selection joueurs team 1
+  // 3 = entree des joueurs team 0
+  // 4 = entree des joueurs team 1
+  // 5 = lancer franc
+  // 100+N = clavier numerique pour entrer numero du joueur N de la team 0
+  // 200+N = clavier numerique pour entrer numero du joueur N de la team 1
   public int viewmode=0;
   private String[] cinq;
   // actions to include in stats:
@@ -23,6 +32,8 @@ public class Surface extends View {
   // 4 = shoot 2pts rate
   // 5 = shoot 3pts rate
   private int action=-1;
+  // utilise quand on entre le numero d'un joueur
+  private int joueurnum=0;
 
   public Surface(Context c) {
     super(c);
@@ -65,6 +76,32 @@ public class Surface extends View {
       // il y a eu un fling, donc un panier marque
       BasketTracker.main.addStat(viewmode-1,cinq[selbutton],action);
       viewmode=0;
+    } else if (viewmode==3) {
+      // entree du joueur N de la team 0
+      joueurnum=0;
+      if (selbutton==limits.length-1) viewmode=0;
+      else viewmode=100+selbutton;
+    } else if (viewmode==4) {
+      // entree du joueur N de la team 1
+      joueurnum=0;
+      if (selbutton==limits.length-1) viewmode=0;
+      else viewmode=200+selbutton;
+    } else if (viewmode>=100&&viewmode<200) {
+      if (selbutton==10) {
+        BasketTracker.main.setJoueur(0,viewmode-100,joueurnum);
+        viewmode=3;
+      } else {
+        joueurnum*=10;
+        joueurnum+=selbutton;
+      }
+    } else if (viewmode>=200&&viewmode<300) {
+      if (selbutton==10) {
+        BasketTracker.main.setJoueur(1,viewmode-200,joueurnum);
+        viewmode=4;
+      } else {
+        joueurnum*=10;
+        joueurnum+=selbutton;
+      }
     }
   }
   // called when pressed on the surface
@@ -82,7 +119,14 @@ public class Surface extends View {
           }
         }.start();
       }
-    } else buttonSelected(x,y);
+    } else if (viewmode>=1&&viewmode<5) {
+        // on est dans un mode de selection de joueur
+        buttonSelected(x,y);
+    } else if (viewmode>=100&&viewmode<300) {
+        // on est dans un mode d'entree de joueur
+        buttonSelected(x,y);
+    }
+    this.invalidate();
   }
 
   @Override
@@ -133,6 +177,45 @@ public class Surface extends View {
 
     if (viewmode==0) showPoints(canvas);
     else if (viewmode==1||viewmode==2) choosePlayer(canvas,viewmode-1);
+    else if (viewmode==3||viewmode==4) choosePlayer(canvas,viewmode-3);
+    else if (viewmode>=100) claviernumerique(canvas);
+  }
+
+  private void claviernumerique(Canvas canvas) {
+    int team=0;
+    if (viewmode>=200) team=1;
+    if (team==0) canvas.drawColor(Color.RED);
+    else if (team==1) canvas.drawColor(Color.BLUE);
+    Paint bPaint=new Paint();
+    bPaint.setColor(Color.YELLOW);
+    Paint tPaint = new Paint();
+    tPaint.setColor(Color.BLACK);
+    tPaint.setTextSize(40);
+    limits = new int[11][4];
+    for (int i=1;i<=9;i++) {
+      limits[i][0]=100+((int)((i-1)%3))*80;
+      limits[i][1]=10+((int)((i-1)/3))*60;
+      limits[i][2]=170+((int)((i-1)%3))*80;
+      limits[i][3]=60+((int)((i-1)/3))*60;
+      canvas.drawRect(limits[i][0],limits[i][1],limits[i][2],limits[i][3],bPaint);
+      canvas.drawText(""+i,10+limits[i][0],40+limits[i][1],tPaint);
+    }
+    {
+      limits[0][0]=100+1*80;
+      limits[0][1]=10+3*60;
+      limits[0][2]=170+1*80;
+      limits[0][3]=60+3*60;
+      canvas.drawRect(limits[0][0],limits[0][1],limits[0][2],limits[0][3],bPaint);
+      canvas.drawText("0",10+limits[0][0],40+limits[0][1],tPaint);
+    }
+    {
+      limits[10][0]=100+2*80;
+      limits[10][1]=10+3*60;
+      limits[10][2]=170+2*80;
+      limits[10][3]=60+3*60;
+      canvas.drawRect(limits[10][0],limits[10][1],limits[10][2],limits[10][3],bPaint);
+      canvas.drawText("OK",10+limits[10][0],40+limits[10][1],tPaint);
+    }
   }
 
   protected void choosePlayer(Canvas canvas, int team) {
@@ -144,7 +227,7 @@ public class Surface extends View {
     Paint tPaint = new Paint();
     tPaint.setColor(Color.BLACK);
     tPaint.setTextSize(40);
-    limits = new int[cinq.length][4];
+    limits = new int[cinq.length+1][4];
     for (int i=0;i<cinq.length;i++) {
       canvas.drawRect(100,10+i*60,170,60+i*60,bPaint);
       canvas.drawText(cinq[i],110,50+i*60,tPaint);
@@ -152,6 +235,15 @@ public class Surface extends View {
       limits[i][1]=10+i*60;
       limits[i][2]=170;
       limits[i][3]=60+i*60;
+    }
+    {
+      int i=2;
+      canvas.drawRect(190,10+i*60,260,60+i*60,bPaint);
+      canvas.drawText("OK",200,50+i*60,tPaint);
+      limits[cinq.length][0]=190;
+      limits[cinq.length][1]=10+i*60;
+      limits[cinq.length][2]=260;
+      limits[cinq.length][3]=60+i*60;
     }
   }
   protected void showPoints(Canvas canvas) {

@@ -31,6 +31,7 @@ public class BasketTracker extends FragmentActivity {
     private GestureDetector gestureDetector;
     private View.OnTouchListener gestureListener;
     private Surface canvas;
+    private String[][] cinq = {{"1","2","3","4","5"},{"1","2","3","4","5"}};
 
     /** Called when the activity is first created. */
     @Override
@@ -121,17 +122,15 @@ public class BasketTracker extends FragmentActivity {
     }
 
     public String[] getCinq(int team) {
-      if (team==0) {
-        String[] cinq = {"1","2","3","4","5"};
-        return cinq;
-      } else {
-        String[] cinq = {"10","11","12","13","14"};
-        return cinq;
-      }
+      return cinq[team];
     }
 
     public void addStat(int team, String player, int action) {
       // TODO
+    }
+  
+    public void setJoueur(int team, int playerbox, int num) {
+      cinq[team][playerbox]=""+num;
     }
 
     public void cancel(View view) {
@@ -141,11 +140,11 @@ public class BasketTracker extends FragmentActivity {
     public void chrono(View view) {
     }
     public void bancLeft(View view) {
+      canvas.viewmode=3;
+      canvas.invalidate();
     }
     public void bancRight(View view) {
-    }
-    public void j0(View view) {
-    }
-    public void j1(View view) {
+      canvas.viewmode=4;
+      canvas.invalidate();
     }
 }
