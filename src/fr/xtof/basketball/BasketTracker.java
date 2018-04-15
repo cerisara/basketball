@@ -133,8 +133,6 @@ public class BasketTracker extends FragmentActivity {
       cinq[team][playerbox]=""+num;
     }
 
-    public void cancel(View view) {
-    }
     public void menu(View view) {
     }
     public void chrono(View view) {

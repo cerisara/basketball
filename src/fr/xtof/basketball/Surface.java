@@ -50,8 +50,9 @@ public class Surface extends View {
     if (viewmode>0) return;
     if (x>=limits[0][0]&&y>=limits[0][1]&&x<limits[0][2]&&y<limits[0][3]) {npts=2; action=0;}
     else if (x>=limits[1][0]&&y>=limits[1][1]&&x<limits[1][2]&&y<limits[1][3]) {npts=3; action=1;}
-    if (deltax>10) {pts1+=npts; viewmode=2;}
-    else if (deltax<-10) {pts0+=npts; viewmode=1;}
+    else if (x>=limits[2][0]&&y>=limits[2][1]&&x<limits[2][2]&&y<limits[2][3]) {npts=1; action=2;}
+    if (deltax>30) {pts1+=npts; viewmode=2;}
+    else if (deltax<-30) {pts0+=npts; viewmode=1;}
     // ajoute un flag pour empecher de prendre en compte un select s il y a un fling
     wasFling=true;
     new CountDownTimer(500,500) {
@@ -273,25 +274,32 @@ public class Surface extends View {
 
     Paint b2Paint = new Paint();
     b2Paint.setColor(Color.YELLOW);
+
+    limits = new int[3][4];
     int y=(int)((float)haut*0.9);
     canvas.drawRect(hmid-len,y-len,hmid+len,y+len,b2Paint);
     canvas.drawText("+2",hmid-len+6,y-len+40,tPaint);
-
-    Paint b3Paint = new Paint();
-    b3Paint.setColor(Color.YELLOW);
-    int y2=(int)((float)haut*0.7);
-    canvas.drawRect(hmid-len,y2-len,hmid+len,y2+len,b3Paint);
-    canvas.drawText("+3",hmid-len+6,y2-len+40,tPaint);
-
-    limits = new int[2][4];
     limits[0][0]=hmid-len;
     limits[0][1]=y-len;
     limits[0][2]=hmid+len;
     limits[0][3]=y+len;
+
+    int y2=(int)((float)haut*0.7);
+    canvas.drawRect(hmid-len,y2-len,hmid+len,y2+len,b2Paint);
+    canvas.drawText("+3",hmid-len+6,y2-len+40,tPaint);
     limits[1][0]=hmid-len;
     limits[1][1]=y2-len;
     limits[1][2]=hmid+len;
     limits[1][3]=y2+len;
+
+    int y3=(int)((float)haut*0.5);
+    canvas.drawRect(hmid-len,y3-len,hmid+len,y3+len,b2Paint);
+    canvas.drawText("LF",hmid-len+6,y3-len+40,tPaint);
+    limits[2][0]=hmid-len;
+    limits[2][1]=y3-len;
+    limits[2][2]=hmid+len;
+    limits[2][3]=y3+len;
+
   }
 }
 
