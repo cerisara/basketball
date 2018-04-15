@@ -58,23 +58,15 @@
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@+id/surfaces"
       android:layout_below="@+id/joueurs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
       android:layout_above="@+id/menus"
+      android:id="@+id/surfaces" >
+    <fr.xtof.basketball.Surface 
+      android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_width="match_parent" >
-        <fr.xtof.basketball.Surface android:id="@+id/vleft"
-          android:layout_height="wrap_content"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:background="@color/Red"
-        />
-        <fr.xtof.basketball.Surface android:id="@+id/vright"
-          android:layout_height="wrap_content"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:background="@color/Blue"
-        />
+    />
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

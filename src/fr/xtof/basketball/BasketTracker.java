@@ -35,7 +35,7 @@ public class BasketTracker extends FragmentActivity {
         setContentView(R.layout.main);
     }
 
-    private void msg(final String s) {
+    public static void msg(final String s) {
         main.runOnUiThread(new Runnable() {
             public void run() {
                 Toast.makeText(main, s, Toast.LENGTH_LONG).show();
