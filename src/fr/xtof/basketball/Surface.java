@@ -75,7 +75,9 @@ public class Surface extends View {
       // TODO
     } else if (viewmode==1||viewmode==2) {
       // il y a eu un fling, donc un panier marque
-      BasketTracker.main.addStat(viewmode-1,cinq[selbutton],action);
+      // si on ne donne pas de joueur qui a marque, on compte les points pour l'equipe, mais pas de stats !
+      if (selbutton>cinq.length-1) viewmode=0;
+      else BasketTracker.main.addStat(viewmode-1,cinq[selbutton],action);
       viewmode=0;
     } else if (viewmode==3) {
       // entree du joueur N de la team 0

@@ -8,6 +8,7 @@
     <application android:label="BasketTracker"
         android:icon="@drawable/ic_launcher" >
         <activity android:name="BasketTracker"
+                  android:configChanges="orientation"
                   android:label="BasketTracker">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

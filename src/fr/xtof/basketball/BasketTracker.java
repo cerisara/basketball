@@ -30,7 +30,7 @@ public class BasketTracker extends FragmentActivity {
     public static BasketTracker main;
     private GestureDetector gestureDetector;
     private View.OnTouchListener gestureListener;
-    private Surface canvas;
+    private Surface canvas=null;
     private String[][] cinq = {{"1","2","3","4","5"},{"1","2","3","4","5"}};
 
     /** Called when the activity is first created. */
@@ -41,7 +41,7 @@ public class BasketTracker extends FragmentActivity {
         main=this;
         setContentView(R.layout.main);
 
-        canvas = (Surface)findViewById(R.id.surfaces);
+        if (canvas==null) canvas = (Surface)findViewById(R.id.surfaces);
         gestureDetector = new GestureDetector(this, new MyGestureListener());
         gestureListener = new View.OnTouchListener() {
           public boolean onTouch(View v, MotionEvent event) {
