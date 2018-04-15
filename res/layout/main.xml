@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/bancs"
+      android:layout_alignParentTop="true"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent" >
+      <Button
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="BANC"
+          android:onClick="bancLeft" />
+      <Button
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="BANC"
+          android:onClick="bancRight" />
+    </LinearLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/joueurs"
+      android:layout_below="@+id/bancs"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent" >
+      <Button
+          android:id="@+id/j0left"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:text="J0"
+          android:onClick="j0" />
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toRightOf="@+id/j0left"
+          android:text="J1"
+          android:onClick="j1" />
+
+      <Button
+          android:id="@+id/j1right"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentRight="true"
+          android:text="J1"
+          android:onClick="j1" />
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_toLeftOf="@+id/j1right"
+          android:text="J0"
+          android:onClick="j0" />
+    </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/surfaces"
+      android:layout_below="@+id/joueurs"
+      android:layout_above="@+id/menus"
+      android:layout_height="match_parent"
+      android:layout_width="match_parent" >
+        <fr.xtof.basketball.Surface android:id="@+id/vleft"
+          android:layout_height="wrap_content"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:background="@color/Red"
+        />
+        <fr.xtof.basketball.Surface android:id="@+id/vright"
+          android:layout_height="wrap_content"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:background="@color/Blue"
+        />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/menus"
+      android:layout_alignParentBottom="true"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent" >
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Menu"
+          android:layout_weight="1"
+          android:onClick="menu" />
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="00:00"
+          android:layout_weight="1"
+          android:onClick="chrono" />
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Cancel"
+          android:layout_weight="1"
+          android:onClick="cancel" />
+    </LinearLayout>
+
+</RelativeLayout>
+
