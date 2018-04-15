@@ -72,7 +72,7 @@ public class Surface extends View {
     if (viewmode==0) {
       // si on arrive ici, on sait qu'il n'y a pas eu de fling
       // donc on selectionne un "shoot" rate, et il faut choisir le player qui l'a rate
-      // TODO
+      viewmode=10+selbutton;
     } else if (viewmode==1||viewmode==2) {
       // il y a eu un fling, donc un panier marque
       // si on ne donne pas de joueur qui a marque, on compte les points pour l'equipe, mais pas de stats !
@@ -89,6 +89,11 @@ public class Surface extends View {
       joueurnum=0;
       if (selbutton==limits.length-1) viewmode=0;
       else viewmode=200+selbutton;
+    } else if (viewmode>=10&&viewmode<50) {
+      // choix d'un joueur pour un shoot rate
+      if (selbutton<5) BasketTracker.main.addStat(0,cinq[selbutton],viewmode-10);
+      else if (selbutton<10) BasketTracker.main.addStat(1,cinq[selbutton],viewmode-10);
+      viewmode=0;
     } else if (viewmode>=100&&viewmode<200) {
       if (selbutton==10) {
         BasketTracker.main.setJoueur(0,viewmode-100,joueurnum);
@@ -193,6 +198,7 @@ public class Surface extends View {
     else if (viewmode==1||viewmode==2) choosePlayer(canvas,viewmode-1);
     else if (viewmode==3||viewmode==4) choosePlayer(canvas,viewmode-3);
     else if (viewmode==6) drawMenu(canvas);
+    else if (viewmode>=10&&viewmode<50) chooseAllPlayers(canvas);
     else if (viewmode>=100) claviernumerique(canvas);
   }
 
@@ -261,6 +267,48 @@ public class Surface extends View {
       limits[10][3]=60+3*60;
       canvas.drawRect(limits[10][0],limits[10][1],limits[10][2],limits[10][3],bPaint);
       canvas.drawText("OK",10+limits[10][0],40+limits[10][1],tPaint);
+    }
+  }
+
+  protected void chooseAllPlayers(Canvas canvas) {
+    String[] cinq0 = BasketTracker.main.getCinq(0);
+    String[] cinq1 = BasketTracker.main.getCinq(1);
+    cinq = new String[cinq0.length+cinq1.length];
+    for (int i=0;i<cinq0.length;i++) cinq[i]=cinq0[i];
+    for (int i=0;i<cinq1.length;i++) cinq[cinq0.length+i]=cinq1[i];
+    Paint bPaint=new Paint();
+    bPaint.setColor(Color.YELLOW);
+    Paint tPaint = new Paint();
+    tPaint.setColor(Color.BLACK);
+    tPaint.setTextSize(40);
+
+    int hmid = canvas.getWidth()/2;
+    limits = new int[cinq.length+1][4];
+    for (int i=0;i<cinq0.length;i++) {
+      canvas.drawRect(50,10+i*60,120,60+i*60,bPaint);
+      canvas.drawText(cinq0[i],60,50+i*60,tPaint);
+      limits[i][0]=50;
+      limits[i][1]=10+i*60;
+      limits[i][2]=120;
+      limits[i][3]=60+i*60;
+    }
+    for (int i=0;i<cinq1.length;i++) {
+      canvas.drawRect(hmid+50,10+i*60,hmid+120,60+i*60,bPaint);
+      canvas.drawText(cinq1[i],hmid+60,50+i*60,tPaint);
+      limits[cinq0.length+i][0]=hmid+50;
+      limits[cinq0.length+i][1]=10+i*60;
+      limits[cinq0.length+i][2]=hmid+120;
+      limits[cinq0.length+i][3]=60+i*60;
+    }
+ 
+    {
+      int i=2;
+      canvas.drawRect(hmid-30,10+i*60,hmid+30,60+i*60,bPaint);
+      canvas.drawText("NO",hmid-20,50+i*60,tPaint);
+      limits[cinq.length][0]=hmid-30;
+      limits[cinq.length][1]=10+i*60;
+      limits[cinq.length][2]=hmid+30;
+      limits[cinq.length][3]=60+i*60;
     }
   }
 
