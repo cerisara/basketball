@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
 import android.view.GestureDetector;
+import android.content.Intent;
 
 public class BasketTracker extends FragmentActivity {
     public static BasketTracker main;
@@ -32,6 +33,7 @@ public class BasketTracker extends FragmentActivity {
     private View.OnTouchListener gestureListener;
     private Surface canvas=null;
     private String[][] cinq = {{"1","2","3","4","5"},{"1","2","3","4","5"}};
+    private ArrayList<String> stats = new ArrayList<String>();
 
     /** Called when the activity is first created. */
     @Override
@@ -113,7 +115,14 @@ public class BasketTracker extends FragmentActivity {
     }
 
     public void addStat(int team, String player, int action) {
-      // TODO
+      stats.add(""+team+" "+player+" "+action);
+    }
+    public String getStats() {
+      String s="";
+      for (String x: stats) {
+        s+=x+"\n";
+      }
+      return s;
     }
   
     public void setJoueur(int team, int playerbox, int num) {
@@ -135,5 +144,18 @@ public class BasketTracker extends FragmentActivity {
       canvas.invalidate();
     }
     public void reset() {
+    }
+    public void email() {
+      Intent emailIntent = new Intent(Intent.ACTION_SEND); 
+      emailIntent.setType("message/rfc822");  //set the email recipient
+      //emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL  , recipient);
+      emailIntent.putExtra(Intent.EXTRA_SUBJECT, "game statistics");
+      emailIntent.putExtra(Intent.EXTRA_TEXT, getStats());
+      //let the user choose what email client to use
+      try {
+        startActivity(Intent.createChooser(emailIntent, "Send mail using..."));
+      } catch (android.content.ActivityNotFoundException e) {
+        msg("there are no email clients installed");
+      }
     }
 }

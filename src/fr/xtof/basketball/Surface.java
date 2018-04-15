@@ -110,7 +110,7 @@ public class Surface extends View {
         BasketTracker.main.reset();
         pts0=pts1=0;
       } else if (selbutton==1) {
-        // TODO: send an intent with all the stats
+        BasketTracker.main.email();
       }
       viewmode=0;
     }
