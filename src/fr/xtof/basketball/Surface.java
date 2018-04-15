@@ -10,8 +10,12 @@ import android.os.CountDownTimer;
 
 public class Surface extends View {
   public int realw,realh;
-  private boolean selected=false;
+  private boolean selected2=false;
+  private boolean selected3=false;
+  private int[] limits2 = {0,0,0,0};
+  private int[] limits3 = {0,0,0,0};
   public boolean touchable=true;
+  public int pts0=0, pts1=0;
 
   public Surface(Context c) {
     super(c);
@@ -23,10 +27,21 @@ public class Surface extends View {
     super(c,attribs,defStyle);
   }
 
-  public void invertSelected() {
+  public void fling(int x, int y, float deltax) {
+    int npts=0;
+    if (x>=limits2[0]&&y>=limits2[1]&&x<limits2[2]&&y<limits2[3]) npts=2;
+    else if (x>=limits3[0]&&y>=limits3[1]&&x<limits3[2]&&y<limits3[3]) npts=3;
+    if (deltax>10) pts1+=npts;
+    else if (deltax<-10) pts0+=npts;
+    selected2=selected3=false;
+    this.invalidate();
+  }
+  public void invertSelected(int x, int y) {
     touchable=false;
-    selected = !selected;
-    new CountDownTimer(500,500) {
+    if (x>=limits2[0]&&y>=limits2[1]&&x<limits2[2]&&y<limits2[3]) selected2=!selected2;
+    else if (x>=limits3[0]&&y>=limits3[1]&&x<limits3[2]&&y<limits3[3]) selected3=!selected3;
+
+    new CountDownTimer(300,300) {
       public void onTick(long t) {}
       public void onFinish() {
         touchable=true;
@@ -92,18 +107,40 @@ public class Surface extends View {
     canvas.drawColor(Color.BLUE);
     canvas.restore();
 
+    // points
+    Paint pPaint = new Paint();
+    pPaint.setColor(Color.BLACK);
+    pPaint.setTextSize(100);
+    canvas.drawText(""+pts0,hmid/3,haut/2,pPaint);
+    canvas.drawText(""+pts1,hmid+hmid/3,haut/2,pPaint);
+
     // buttons
     Paint tPaint = new Paint();
     tPaint.setColor(Color.BLACK);
     tPaint.setTextSize(40);
-    Paint bPaint = new Paint();
-    if (selected) bPaint.setColor(Color.WHITE);
-    else bPaint.setColor(Color.YELLOW);
     int len=30;
 
+    Paint b2Paint = new Paint();
+    if (selected2) b2Paint.setColor(Color.WHITE);
+    else b2Paint.setColor(Color.YELLOW);
     int y=(int)((float)haut*0.9);
-    canvas.drawRect(hmid-len,y-len,hmid+len,y+len,bPaint);
+    limits2[0]=hmid-len;
+    limits2[1]=y-len;
+    limits2[2]=hmid+len;
+    limits2[3]=y+len;
+    canvas.drawRect(hmid-len,y-len,hmid+len,y+len,b2Paint);
     canvas.drawText("+2",hmid-len+6,y-len+40,tPaint);
+
+    Paint b3Paint = new Paint();
+    if (selected3) b3Paint.setColor(Color.WHITE);
+    else b3Paint.setColor(Color.YELLOW);
+    y=(int)((float)haut*0.7);
+    limits3[0]=hmid-len;
+    limits3[1]=y-len;
+    limits3[2]=hmid+len;
+    limits3[3]=y+len;
+    canvas.drawRect(hmid-len,y-len,hmid+len,y+len,b3Paint);
+    canvas.drawText("+3",hmid-len+6,y-len+40,tPaint);
   }
 }
 

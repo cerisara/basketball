@@ -24,9 +24,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
+import android.view.GestureDetector;
 
 public class BasketTracker extends FragmentActivity {
     public static BasketTracker main;
+    private GestureDetector gestureDetector;
+    private View.OnTouchListener gestureListener;
+    private Surface canvas;
 
     /** Called when the activity is first created. */
     @Override
@@ -36,18 +40,43 @@ public class BasketTracker extends FragmentActivity {
         main=this;
         setContentView(R.layout.main);
 
-        final Surface canvas = (Surface)findViewById(R.id.surfaces);
+        canvas = (Surface)findViewById(R.id.surfaces);
+        gestureDetector = new GestureDetector(this, new MyGestureListener());
+        gestureListener = new View.OnTouchListener() {
+          public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+          }
+        };
+        canvas.setOnTouchListener(gestureListener);
+        
+        /*
         canvas.setOnTouchListener(new OnTouchListener() {
           @Override
           public boolean onTouch(View v, MotionEvent event) {
             if (canvas.touchable) {
-              canvas.invertSelected();
+              canvas.invertSelected((int)event.getX(0),(int)event.getY(0));
               canvas.invalidate();
             }
-            //if((event.getX(0)>=160) && 
             return true;
           }
         });
+        */
+    }
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent event) {
+            System.out.println("DETDOWN");
+            canvas.invertSelected((int)event.getX(0),(int)event.getY(0));
+            canvas.invalidate();
+            return true;
+        }
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            System.out.println("DETFLING "+velocityX);
+            canvas.fling((int)event1.getX(0),(int)event1.getY(0),velocityX);
+            return true;
+        }
     }
 
     public static void msg(final String s) {
