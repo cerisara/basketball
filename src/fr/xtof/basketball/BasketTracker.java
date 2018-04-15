@@ -22,6 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.HashMap;
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
 import android.view.GestureDetector;
@@ -118,9 +119,28 @@ public class BasketTracker extends FragmentActivity {
       stats.add(""+team+" "+player+" "+action);
     }
     public String getStats() {
-      String s="";
+      int[] pts={0,0};
       for (String x: stats) {
-        s+=x+"\n";
+        String[] xx = x.split(" ");
+        int action=Integer.parseInt(xx[2]);
+        int team=Integer.parseInt(xx[0]);
+        if (action==0) pts[team]+=2;
+        else if (action==1) pts[team]+=3;
+        else if (action==2) pts[team]+=1;
+      }
+      String s="TEAM A: "+pts[0]+"\n";
+      s+="TEAM B: "+pts[1]+"\n";
+
+      s+="\nDetails:\n";
+      for (String x: stats) {
+        String[] xx = x.split(" ");
+        int action=Integer.parseInt(xx[2]);
+        int team=Integer.parseInt(xx[0]);
+        String tt="A";
+        if (team==1) tt="B";
+        if (action==0) s+="+2 Team "+tt+" Joueur "+xx[1]+"\n";
+        else if (action==1) s+="+3 Team "+tt+" Joueur "+xx[1]+"\n";
+        else if (action==2) s+="+1 Team "+tt+" Joueur "+xx[1]+"\n";
       }
       return s;
     }
