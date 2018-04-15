@@ -120,6 +120,20 @@ public class BasketTracker extends FragmentActivity {
       dialog.show(getSupportFragmentManager(),"edit task");
     }
 
+    public String[] getCinq(int team) {
+      if (team==0) {
+        String[] cinq = {"1","2","3","4","5"};
+        return cinq;
+      } else {
+        String[] cinq = {"10","11","12","13","14"};
+        return cinq;
+      }
+    }
+
+    public void addStat(int team, String player, int action) {
+      // TODO
+    }
+
     public void cancel(View view) {
     }
     public void menu(View view) {
