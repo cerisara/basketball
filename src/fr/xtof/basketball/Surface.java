@@ -19,7 +19,7 @@ public class Surface extends View {
   // 2 = selection joueurs team 1
   // 3 = entree des joueurs team 0
   // 4 = entree des joueurs team 1
-  // 5 = lancer franc
+  // 6 = menu
   // 100+N = clavier numerique pour entrer numero du joueur N de la team 0
   // 200+N = clavier numerique pour entrer numero du joueur N de la team 1
   public int viewmode=0;
@@ -103,6 +103,14 @@ public class Surface extends View {
         joueurnum*=10;
         joueurnum+=selbutton;
       }
+    } else if (viewmode==6) {
+      if (selbutton==0) {
+        BasketTracker.main.reset();
+        pts0=pts1=0;
+      } else if (selbutton==1) {
+        // TODO: send an intent with all the stats
+      }
+      viewmode=0;
     }
   }
   // called when pressed on the surface
@@ -122,6 +130,9 @@ public class Surface extends View {
       }
     } else if (viewmode>=1&&viewmode<5) {
         // on est dans un mode de selection de joueur
+        buttonSelected(x,y);
+    } else if (viewmode==6) {
+        // on est dans le menu
         buttonSelected(x,y);
     } else if (viewmode>=100&&viewmode<300) {
         // on est dans un mode d'entree de joueur
@@ -179,7 +190,39 @@ public class Surface extends View {
     if (viewmode==0) showPoints(canvas);
     else if (viewmode==1||viewmode==2) choosePlayer(canvas,viewmode-1);
     else if (viewmode==3||viewmode==4) choosePlayer(canvas,viewmode-3);
+    else if (viewmode==6) drawMenu(canvas);
     else if (viewmode>=100) claviernumerique(canvas);
+  }
+
+  private void drawMenu(Canvas canvas) {
+    canvas.drawColor(Color.BLACK);
+    Paint bPaint=new Paint();
+    bPaint.setColor(Color.DKGRAY);
+    Paint tPaint = new Paint();
+    tPaint.setColor(Color.WHITE);
+    tPaint.setTextSize(40);
+    limits = new int[3][4];
+
+    limits[0][0] = 50;
+    limits[0][1] = 10;
+    limits[0][2] = 250;
+    limits[0][3] = 60;
+    canvas.drawRect(limits[0][0],limits[0][1],limits[0][2],limits[0][3],bPaint);
+    canvas.drawText("reset",10+limits[0][0],40+limits[0][1],tPaint);
+    
+    limits[1][0] = 50;
+    limits[1][1] = 70;
+    limits[1][2] = 250;
+    limits[1][3] = 120;
+    canvas.drawRect(limits[1][0],limits[1][1],limits[1][2],limits[1][3],bPaint);
+    canvas.drawText("share stats",10+limits[1][0],40+limits[1][1],tPaint);
+    
+    limits[2][0] = 50;
+    limits[2][1] = 130;
+    limits[2][2] = 250;
+    limits[2][3] = 180;
+    canvas.drawRect(limits[2][0],limits[2][1],limits[2][2],limits[2][3],bPaint);
+    canvas.drawText("cancel",10+limits[2][0],40+limits[2][1],tPaint);
   }
 
   private void claviernumerique(Canvas canvas) {

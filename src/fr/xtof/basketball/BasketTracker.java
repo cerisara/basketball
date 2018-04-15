@@ -49,19 +49,6 @@ public class BasketTracker extends FragmentActivity {
           }
         };
         canvas.setOnTouchListener(gestureListener);
-        
-        /*
-        canvas.setOnTouchListener(new OnTouchListener() {
-          @Override
-          public boolean onTouch(View v, MotionEvent event) {
-            if (canvas.touchable) {
-              canvas.invertSelected((int)event.getX(0),(int)event.getY(0));
-              canvas.invalidate();
-            }
-            return true;
-          }
-        });
-        */
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -134,6 +121,8 @@ public class BasketTracker extends FragmentActivity {
     }
 
     public void menu(View view) {
+      canvas.viewmode=6;
+      canvas.invalidate();
     }
     public void chrono(View view) {
     }
@@ -144,5 +133,7 @@ public class BasketTracker extends FragmentActivity {
     public void bancRight(View view) {
       canvas.viewmode=4;
       canvas.invalidate();
+    }
+    public void reset() {
     }
 }
