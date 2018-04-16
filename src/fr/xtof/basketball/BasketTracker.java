@@ -45,16 +45,40 @@ public class BasketTracker extends FragmentActivity {
         setContentView(R.layout.main);
 
         if (canvas==null) canvas = (Surface)findViewById(R.id.surfaces);
-        gestureDetector = new GestureDetector(this, new MyGestureListener());
+        //gestureDetector = new GestureDetector(this, new MyGestureListener());
         gestureListener = new View.OnTouchListener() {
+          int x0,y0,x1,y1;
           public boolean onTouch(View v, MotionEvent event) {
-            return gestureDetector.onTouchEvent(event);
+            int a = event.getActionMasked();
+            if (a==0) {
+              // DOWN : debut du mouvement
+              x0=(int)event.getX(0);
+              y0=(int)event.getY(0);
+              canvas.invertSelected(x0,y0);
+              canvas.invalidate();
+            } else if (a==1) {
+              // UP: fin du mouvement
+              x1=(int)event.getX(event.getPointerCount()-1);
+              y1=(int)event.getY(event.getPointerCount()-1);
+              x1-=x0; y1-=y0;
+              canvas.fling(x0,y0,x1,y1);
+            }
+            return true;
           }
         };
         canvas.setOnTouchListener(gestureListener);
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private boolean isscrolling = false;
+        private int dx0, dy0;
+        private long lastT=0;
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            System.out.println("DETUP");
+            return true;
+        }
         @Override
         public boolean onDown(MotionEvent event) {
             System.out.println("DETDOWN");
@@ -64,10 +88,27 @@ public class BasketTracker extends FragmentActivity {
         }
         @Override
         public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            System.out.println("DETFLING "+velocityX);
-            canvas.fling((int)event1.getX(0),(int)event1.getY(0),velocityX);
+            System.out.println("DETFLING "+velocityX+" "+velocityY);
+            // canvas.fling((int)event1.getX(0),(int)event1.getY(0),velocityX,velocityY);
             return true;
         }
+        @Override
+        public boolean onScroll(MotionEvent event1, MotionEvent event2, float dx, float dy) {
+            System.out.println("DETSCROLL "+dx+" "+dy);
+            if (!isscrolling) {
+              isscrolling=true;
+              lastT = System.currentTimeMillis();
+              // dx0=dx; dy0=dy;
+            } else {
+            }
+            return true;
+        }
+    }
+
+    public void setText(final String s) {
+      TextView t = (TextView)findViewById(R.id.textline);
+      t.setText(s);
+      t.invalidate();
     }
 
     public static void msg(final String s) {

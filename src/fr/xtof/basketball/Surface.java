@@ -25,9 +25,9 @@ public class Surface extends View {
   public int viewmode=0;
   private String[] cinq;
   // actions to include in stats:
-  // 0 = +2 pts
-  // 1 = +3 pts
-  // 2 = LF +1 pt
+  // 0 = +2 pts   10 = rate
+  // 1 = +3 pts   11 = rate
+  // 2 = LF +1 pt 12 = rate
   // 3 = Fault
   // 4 = shoot 2pts rate
   // 5 = shoot 3pts rate
@@ -45,15 +45,33 @@ public class Surface extends View {
     super(c,attribs,defStyle);
   }
 
-  public void fling(int x, int y, float deltax) {
+  public void fling(int x, int y, float deltax, float deltay) {
     int npts=0;
     if (viewmode>0) return;
     if (x>=limits[0][0]&&y>=limits[0][1]&&x<limits[0][2]&&y<limits[0][3]) {npts=2; action=0;}
     else if (x>=limits[1][0]&&y>=limits[1][1]&&x<limits[1][2]&&y<limits[1][3]) {npts=3; action=1;}
     else if (x>=limits[2][0]&&y>=limits[2][1]&&x<limits[2][2]&&y<limits[2][3]) {npts=1; action=2;}
-    if (deltax>30) {pts1+=npts; viewmode=2;}
-    else if (deltax<-30) {pts0+=npts; viewmode=1;}
+    if (deltax>30) {
+      if (deltay<0) {
+        pts1+=npts;
+        BasketTracker.main.setText("Joueur ayant réussi son +"+npts+" ?");
+      } else {
+        action+=10;
+        BasketTracker.main.setText("Joueur ayant raté son +"+npts+" ?");
+      }
+      viewmode=2;
+    } else if (deltax<-30) {
+      if (deltay<0) {
+        pts0+=npts;
+        BasketTracker.main.setText("Joueur ayant réussi son +"+npts+" ?");
+      } else {
+        action+=10;
+        BasketTracker.main.setText("Joueur ayant raté son +"+npts+" ?");
+      }
+      viewmode=1;
+    }
     // ajoute un flag pour empecher de prendre en compte un select s il y a un fling
+    // TODO: supprimer ce flag ? Pas sur qu'il soit utile
     wasFling=true;
     new CountDownTimer(500,500) {
       public void onTick(long t) {}
@@ -72,12 +90,14 @@ public class Surface extends View {
     if (viewmode==0) {
       // si on arrive ici, on sait qu'il n'y a pas eu de fling
       // donc on selectionne un "shoot" rate, et il faut choisir le player qui l'a rate
-      viewmode=10+selbutton;
+      // viewmode=10+selbutton;
+      // je tente une autre option: fling vers le bas pour rate, vers le haut pour reussi
     } else if (viewmode==1||viewmode==2) {
       // il y a eu un fling, donc un panier marque
-      // si on ne donne pas de joueur qui a marque, on compte les points pour l'equipe, mais pas de stats !
+      // si on ne donne pas de joueur, on compte les points pour l'equipe, mais pas de stats !
       if (selbutton>cinq.length-1) viewmode=0;
       else BasketTracker.main.addStat(viewmode-1,cinq[selbutton],action);
+      BasketTracker.main.setText("Faites glisser les shoots");
       viewmode=0;
     } else if (viewmode==3) {
       // entree du joueur N de la team 0

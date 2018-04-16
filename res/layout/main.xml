@@ -23,8 +23,15 @@
           android:onClick="bancRight" />
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
       android:layout_below="@+id/bancs"
+      android:text="Faites glisser les points !"
+      android:id="@+id/textline" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_below="@+id/textline"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_above="@+id/menus" >
