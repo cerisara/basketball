@@ -161,6 +161,8 @@ public class BasketTracker extends FragmentActivity {
     }
     public String getStats() {
       int[] pts={0,0};
+      HashMap<String,int[]> joueurA2stat = new HashMap<String,int[]>();
+      HashMap<String,int[]> joueurB2stat = new HashMap<String,int[]>();
       for (String x: stats) {
         String[] xx = x.split(" ");
         int action=Integer.parseInt(xx[2]);
@@ -168,6 +170,25 @@ public class BasketTracker extends FragmentActivity {
         if (action==0) pts[team]+=2;
         else if (action==1) pts[team]+=3;
         else if (action==2) pts[team]+=1;
+
+        int[] st=null;
+        if (team==0) st=joueurA2stat.get(xx[1]);
+        else st=joueurB2stat.get(xx[1]);
+        if (st==null) {
+          // N2 ok; N2 ko; N3 ok; N3 ko; LF ok; LF ko
+          st=new int[6];
+          for (int i=0;i<st.length;i++) st[i]=0;
+          if (team==0) joueurA2stat.put(xx[1],st);
+          else joueurB2stat.put(xx[1],st);
+        }
+        switch (action) {
+          case 0: st[0]++; break;
+          case 1: st[2]++; break;
+          case 2: st[4]++; break;
+          case 10: st[1]++; break;
+          case 11: st[3]++; break;
+          case 12: st[5]++; break;
+        }
       }
       String s="TEAM A: "+pts[0]+"\n";
       s+="TEAM B: "+pts[1]+"\n";
@@ -182,6 +203,17 @@ public class BasketTracker extends FragmentActivity {
         if (action==0) s+="+2 Team "+tt+" Joueur "+xx[1]+"\n";
         else if (action==1) s+="+3 Team "+tt+" Joueur "+xx[1]+"\n";
         else if (action==2) s+="+1 Team "+tt+" Joueur "+xx[1]+"\n";
+      }
+
+      s+="\nJoueurs team A:\n";
+      for (String p: joueurA2stat.keySet()) {
+        int[] st = joueurA2stat.get(p);
+        s+=p+"\t 2pts: "+st[0]+"/"+(st[1]+st[0])+" 3pts: "+st[2]+"/"+(st[2]+st[3])+" LF: "+st[4]+"/"+(st[4]+st[5])+"\n";
+      }
+      s+="\nJoueurs team B:\n";
+      for (String p: joueurB2stat.keySet()) {
+        int[] st = joueurB2stat.get(p);
+        s+=p+"\t 2pts: "+st[0]+"/"+(st[1]+st[0])+" 3pts: "+st[2]+"/"+(st[2]+st[3])+" LF: "+st[4]+"/"+(st[4]+st[5])+"\n";
       }
       return s;
     }
