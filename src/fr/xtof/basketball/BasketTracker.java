@@ -159,6 +159,38 @@ public class BasketTracker extends FragmentActivity {
     public void addStat(int team, String player, int action) {
       stats.add(""+team+" "+player+" "+action);
     }
+    protected String getStats(int tteam, String tjoueur) {
+      int[] st = {0,0,0,0,0,0};
+      for (String x: stats) {
+        String[] xx = x.split(" ");
+        int team=Integer.parseInt(xx[0]);
+        if (team!=tteam) continue;
+        String joueur=xx[1];
+        if (!joueur.equals(tjoueur)) continue;
+        int action=Integer.parseInt(xx[2]);
+        switch (action) {
+          case 0: st[0]++; break;
+          case 1: st[2]++; break;
+          case 2: st[4]++; break;
+          case 10: st[1]++; break;
+          case 11: st[3]++; break;
+          case 12: st[5]++; break;
+        }
+      }
+      int nnp=0;
+      int nnok=st[0]; int nntot=st[1]+st[0]; 
+      if (nntot>0) nnp = (int)((float)nnok*100./(float)nntot);
+      String s=nnp+"% ";
+      nnp=0;
+      nnok=st[2]; nntot=st[2]+st[3];
+      if (nntot>0) nnp = (int)((float)nnok*100./(float)nntot);
+      s+=nnp+"% ";
+      nnp=0;
+      nnok=st[4]; nntot=st[4]+st[5];
+      if (nntot>0) nnp = (int)((float)nnok*100./(float)nntot);
+      s+=nnp+"%";
+      return s;
+    }
     public String getStats() {
       int[] pts={0,0};
       HashMap<String,int[]> joueurA2stat = new HashMap<String,int[]>();
@@ -208,12 +240,24 @@ public class BasketTracker extends FragmentActivity {
       s+="\nJoueurs team A:\n";
       for (String p: joueurA2stat.keySet()) {
         int[] st = joueurA2stat.get(p);
-        s+=p+"\t 2pts: "+st[0]+"/"+(st[1]+st[0])+" 3pts: "+st[2]+"/"+(st[2]+st[3])+" LF: "+st[4]+"/"+(st[4]+st[5])+"\n";
+        int nnok=st[0]; int nntot=st[1]+st[0]; int nnp = (int)((float)nnok*100./(float)nntot);
+        s+=p+"\t 2pts: "+nnok+"/"+nntot+"="+nnp+"%";
+        nnok=st[2]; nntot=st[2]+st[3]; nnp = (int)((float)nnok*100./(float)nntot);
+        s+=" 3pts: "+nnok+"/"+nntot+"="+nnp+"%";
+        nnok=st[4]; nntot=st[4]+st[5]; nnp = (int)((float)nnok*100./(float)nntot);
+        s+=" LF: "+nnok+"/"+nntot+"="+nnp+"%";
+        s+="\n";
       }
       s+="\nJoueurs team B:\n";
       for (String p: joueurB2stat.keySet()) {
         int[] st = joueurB2stat.get(p);
-        s+=p+"\t 2pts: "+st[0]+"/"+(st[1]+st[0])+" 3pts: "+st[2]+"/"+(st[2]+st[3])+" LF: "+st[4]+"/"+(st[4]+st[5])+"\n";
+        int nnok=st[0]; int nntot=st[1]+st[0]; int nnp = (int)((float)nnok*100./(float)nntot);
+        s+=p+"\t 2pts: "+nnok+"/"+nntot+"="+nnp+"%";
+        nnok=st[2]; nntot=st[2]+st[3]; nnp = (int)((float)nnok*100./(float)nntot);
+        s+=" 3pts: "+nnok+"/"+nntot+"="+nnp+"%";
+        nnok=st[4]; nntot=st[4]+st[5]; nnp = (int)((float)nnok*100./(float)nntot);
+        s+=" LF: "+nnok+"/"+nntot+"="+nnp+"%";
+        s+="\n";
       }
       return s;
     }
@@ -228,12 +272,19 @@ public class BasketTracker extends FragmentActivity {
     }
     public void chrono(View view) {
     }
-    public void bancLeft(View view) {
-      canvas.viewmode=3;
-      canvas.invalidate();
-    }
-    public void bancRight(View view) {
-      canvas.viewmode=4;
+    public void annule(View view) {
+      String x=stats.get(stats.size()-1);
+      stats.remove(stats.size()-1);
+      String[] xx = x.split(" ");
+      int action=Integer.parseInt(xx[2]);
+      int team=Integer.parseInt(xx[0]);
+      int delta=0;
+      if (action==0) delta=2;
+      else if (action==1) delta=3;
+      else if (action==2) delta=1;
+      if (team==0) canvas.pts0-=delta;
+      else canvas.pts1-=delta;
+      setText("derniere action annulee !");
       canvas.invalidate();
     }
     public void reset() {
