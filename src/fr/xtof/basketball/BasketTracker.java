@@ -33,7 +33,6 @@ public class BasketTracker extends FragmentActivity {
     private GestureDetector gestureDetector;
     private View.OnTouchListener gestureListener;
     private Surface canvas=null;
-    private String[][] cinq = {{"1","2","3","4","5"},{"1","2","3","4","5"}};
     private ArrayList<String> stats = new ArrayList<String>();
 
     /** Called when the activity is first created. */
@@ -152,12 +151,35 @@ public class BasketTracker extends FragmentActivity {
       dialog.show(getSupportFragmentManager(),"edit task");
     }
 
-    public String[] getCinq(int team) {
-      return cinq[team];
-    }
-
     public void addStat(int team, String player, int action) {
       stats.add(""+team+" "+player+" "+action);
+    }
+    public static int getPts(int action) {
+        switch (action) {
+          case 0: return 2;
+          case 1: return 3;
+          case 2: return 1;
+        }
+        return 0;
+    }
+    protected HashMap<String,Integer> getPlayers(int tteam) {
+      HashMap<String,Integer> res = new HashMap<String,Integer>();
+      for (String x: stats) {
+        String[] xx = x.split(" ");
+        int team=Integer.parseInt(xx[0]);
+        if (team!=tteam) continue;
+        String joueur=xx[1];
+        Integer jpts = res.get(joueur);
+        if (jpts==null) jpts=0;
+        int action=Integer.parseInt(xx[2]);
+        switch (action) {
+          case 0: jpts+=2; break;
+          case 1: jpts+=3; break;
+          case 2: jpts+=1; break;
+        }
+        res.put(joueur,jpts);
+      }
+      return res;
     }
     protected String getStats(int tteam, String tjoueur) {
       int[] st = {0,0,0,0,0,0};
@@ -262,10 +284,6 @@ public class BasketTracker extends FragmentActivity {
       return s;
     }
   
-    public void setJoueur(int team, int playerbox, int num) {
-      cinq[team][playerbox]=""+num;
-    }
-
     public void menu(View view) {
       canvas.viewmode=6;
       canvas.invalidate();
@@ -273,18 +291,23 @@ public class BasketTracker extends FragmentActivity {
     public void chrono(View view) {
     }
     public void annule(View view) {
-      String x=stats.get(stats.size()-1);
-      stats.remove(stats.size()-1);
-      String[] xx = x.split(" ");
-      int action=Integer.parseInt(xx[2]);
-      int team=Integer.parseInt(xx[0]);
-      int delta=0;
-      if (action==0) delta=2;
-      else if (action==1) delta=3;
-      else if (action==2) delta=1;
-      if (team==0) canvas.pts0-=delta;
-      else canvas.pts1-=delta;
-      setText("derniere action annulee !");
+      if (canvas.viewmode==canvas.VUE_JOUEURA || canvas.viewmode==canvas.VUE_JOUEURB) {
+        canvas.viewmode=canvas.VUE_SHOOTS;
+        setText("Les points ne sont pas comptes");
+      } else if (stats.size()>0) {
+        String x=stats.get(stats.size()-1);
+        stats.remove(stats.size()-1);
+        String[] xx = x.split(" ");
+        int action=Integer.parseInt(xx[2]);
+        int team=Integer.parseInt(xx[0]);
+        int delta=0;
+        if (action==0) delta=2;
+        else if (action==1) delta=3;
+        else if (action==2) delta=1;
+        if (team==0) canvas.pts0-=delta;
+        else canvas.pts1-=delta;
+        setText("derniere action annulee !");
+      } 
       canvas.invalidate();
     }
     public void reset() {

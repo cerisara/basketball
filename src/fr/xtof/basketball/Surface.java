@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.os.CountDownTimer;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Surface extends View {
   public int realw,realh;
@@ -27,7 +29,6 @@ public class Surface extends View {
   public static final int VUE_JOUEURB= 2;
   public int viewmode=0;
 
-  private String[] cinq;
   // actions to include in stats:
   // 0 = +2 pts   10 = rate
   // 1 = +3 pts   11 = rate
@@ -37,7 +38,10 @@ public class Surface extends View {
   // 5 = shoot 3pts rate
   private int action=-1;
   // utilise quand on entre le numero d'un joueur
-  private int joueurnum=0;
+  public int joueurnum=0;
+
+  private int buttonOK=-1;
+  private ArrayList<String> players = new ArrayList<String>();
 
   public Surface(Context c) {
     super(c);
@@ -57,7 +61,6 @@ public class Surface extends View {
     else if (x>=limits[2][0]&&y>=limits[2][1]&&x<limits[2][2]&&y<limits[2][3]) {npts=1; action=2;}
     if (deltax>30) {
       if (deltay<0) {
-        pts1+=npts;
         BasketTracker.main.setText("Joueur ayant réussi son +"+npts+" ?");
       } else {
         action+=10;
@@ -67,7 +70,6 @@ public class Surface extends View {
       joueurnum=-1;
     } else if (deltax<-30) {
       if (deltay<0) {
-        pts0+=npts;
         BasketTracker.main.setText("Joueur ayant réussi son +"+npts+" ?");
       } else {
         action+=10;
@@ -99,30 +101,24 @@ public class Surface extends View {
       // donc on selectionne un "shoot" rate, et il faut choisir le player qui l'a rate
       // viewmode=10+selbutton;
       // je tente une autre option: fling vers le bas pour rate, vers le haut pour reussi
-    } else if (viewmode==VUE_JOUEURA) {
+    } else if (viewmode==VUE_JOUEURA || viewmode==VUE_JOUEURB) {
       // ici on selectionne le N° d'un joueur sur le pave numerique
-      if (selbutton==limits.length-1) {
-        // si on click sur "OK", le n° est fini
-        viewmode=VUE_SHOOTS;
-        if (joueurnum<0) BasketTracker.main.addStat(0,"X",action);
-        else BasketTracker.main.addStat(0,""+joueurnum,action);
-        BasketTracker.main.setText(BasketTracker.main.getStats(0,""+joueurnum));
-        viewmode=VUE_SHOOTS;
-      } else {
-        // le N° n'est pas fini
-        if (joueurnum>0) joueurnum*=10;
-        else joueurnum=0;
-        joueurnum+=selbutton;
-        BasketTracker.main.setText(""+joueurnum);
+      if (selbutton>buttonOK) {
+        // on choisit un joueur existant
+        joueurnum = Integer.parseInt(players.get(selbutton-buttonOK-1));
+        selbutton=buttonOK;
       }
-    } else if (viewmode==VUE_JOUEURB) {
-      // ici on selectionne le N° d'un joueur sur le pave numerique
-      if (selbutton==limits.length-1) {
+      if (selbutton==buttonOK) {
         // si on click sur "OK", le n° est fini
-        viewmode=VUE_SHOOTS;
-        if (joueurnum<0) BasketTracker.main.addStat(1,"X",action);
-        else BasketTracker.main.addStat(1,""+joueurnum,action);
-        BasketTracker.main.setText(BasketTracker.main.getStats(1,""+joueurnum));
+        int team=0;
+        if (viewmode==VUE_JOUEURA) pts0+=BasketTracker.getPts(action);
+        else {
+          pts1+=BasketTracker.getPts(action);
+          team=1;
+        }
+        if (joueurnum<0) BasketTracker.main.addStat(team,"X",action);
+        else BasketTracker.main.addStat(team,""+joueurnum,action);
+        BasketTracker.main.setText("Joueur "+joueurnum+" : "+BasketTracker.main.getStats(team,""+joueurnum));
         viewmode=VUE_SHOOTS;
       } else {
         // le N° n'est pas fini
@@ -243,8 +239,9 @@ public class Surface extends View {
     canvas.drawText("cancel",10+limits[2][0],40+limits[2][1],tPaint);
   }
 
+  private int cotex=70, cotey=50;
   private void claviernumerique(Canvas canvas, int team) {
-    final int x0=50;
+    int x0=50, y0=10;
     if (team==0) canvas.drawColor(Color.RED);
     else if (team==1) canvas.drawColor(Color.BLUE);
     Paint bPaint=new Paint();
@@ -252,30 +249,53 @@ public class Surface extends View {
     Paint tPaint = new Paint();
     tPaint.setColor(Color.BLACK);
     tPaint.setTextSize(40);
-    limits = new int[11][4];
+
+    HashMap<String,Integer> pls = BasketTracker.main.getPlayers(team);
+    players.clear();
+    if (pls.size()>8) {
+      // trop de boutons a afficher: on n'affiche que ceux qui ont marque le plus de points
+      // TODO
+      players.addAll(pls.keySet());
+    } else {
+      players.addAll(pls.keySet());
+    }
+    limits = new int[11+players.size()][4];
+
     for (int i=1;i<=9;i++) {
-      limits[i][0]=x0+((int)((i-1)%3))*80;
-      limits[i][1]=10+((int)((i-1)/3))*60;
-      limits[i][2]=x0+70+((int)((i-1)%3))*80;
-      limits[i][3]=60+((int)((i-1)/3))*60;
+      limits[i][0]=x0+((int)((i-1)%3))*(cotex+10);
+      limits[i][1]=y0+((int)((i-1)/3))*cotey;
+      limits[i][2]=x0+cotex+((int)((i-1)%3))*(cotex+10);
+      limits[i][3]=cotey+((int)((i-1)/3))*cotey;
       canvas.drawRect(limits[i][0],limits[i][1],limits[i][2],limits[i][3],bPaint);
       canvas.drawText(""+i,10+limits[i][0],40+limits[i][1],tPaint);
     }
     {
-      limits[0][0]=x0+1*80;
-      limits[0][1]=10+3*60;
-      limits[0][2]=x0+70+1*80;
-      limits[0][3]=60+3*60;
+      limits[0][0]=x0+1*(cotex+10);
+      limits[0][1]=y0+3*cotey;
+      limits[0][2]=x0+70+1*(cotex+10);
+      limits[0][3]=cotey+3*cotey;
       canvas.drawRect(limits[0][0],limits[0][1],limits[0][2],limits[0][3],bPaint);
       canvas.drawText("0",10+limits[0][0],40+limits[0][1],tPaint);
     }
     {
-      limits[10][0]=x0+2*80;
-      limits[10][1]=10+3*60;
-      limits[10][2]=x0+70+2*80;
-      limits[10][3]=60+3*60;
+      limits[10][0]=x0+2*(cotex+10);
+      limits[10][1]=y0+3*cotey;
+      limits[10][2]=x0+70+2*(cotex+10);
+      limits[10][3]=cotey+3*cotey;
       canvas.drawRect(limits[10][0],limits[10][1],limits[10][2],limits[10][3],bPaint);
       canvas.drawText("OK",10+limits[10][0],40+limits[10][1],tPaint);
+    }
+    buttonOK=10;
+
+    x0=340;
+    int yspace = 20;
+    for (int i=0;i<players.size();i++) {
+      limits[11+i][0]=x0;
+      limits[11+i][1]=y0+i*(cotey+yspace);
+      limits[11+i][2]=x0+cotex;
+      limits[11+i][3]=y0+i*(cotey+yspace)+cotey;
+      canvas.drawRect(limits[11+i][0],limits[11+i][1],limits[11+i][2],limits[11+i][3],bPaint);
+      canvas.drawText(""+players.get(i),10+limits[11+i][0],40+limits[11+i][1],tPaint);
     }
   }
 
