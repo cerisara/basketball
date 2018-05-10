@@ -311,6 +311,7 @@ public class BasketTracker extends FragmentActivity {
       canvas.invalidate();
     }
     public void reset() {
+      stats.clear();
     }
     public void email() {
       Intent emailIntent = new Intent(Intent.ACTION_SEND); 
