@@ -169,6 +169,7 @@ public class BasketTracker extends FragmentActivity {
         int team=Integer.parseInt(xx[0]);
         if (team!=tteam) continue;
         String joueur=xx[1];
+        if (joueur.charAt(0)=='X') continue;
         Integer jpts = res.get(joueur);
         if (jpts==null) jpts=0;
         int action=Integer.parseInt(xx[2]);
