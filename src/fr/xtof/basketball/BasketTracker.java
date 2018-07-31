@@ -1,5 +1,6 @@
 package fr.xtof.basketball;
 
+
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
@@ -28,12 +29,15 @@ import android.view.MotionEvent;
 import android.view.GestureDetector;
 import android.content.Intent;
 
+import fr.xtof.basketball.Micro;
+
 public class BasketTracker extends FragmentActivity {
     public static BasketTracker main;
     private GestureDetector gestureDetector;
     private View.OnTouchListener gestureListener;
     private Surface canvas=null;
     private ArrayList<String> stats = new ArrayList<String>();
+    public Thread soundthread = null;
 
     /** Called when the activity is first created. */
     @Override
@@ -290,6 +294,32 @@ public class BasketTracker extends FragmentActivity {
       canvas.invalidate();
     }
     public void chrono(View view) {
+	if (soundthread!=null) return;
+	soundthread = new Thread(new Runnable() {
+		public void run() {
+			try {
+				Micro mik = new Micro(new AudioConsumer() {
+					int len=0;
+					public void consume(byte[] buf, double amplitude, double volume) {
+						int p=0;
+						for (int i=0;i<buf.length;i++) {
+							p+=buf[i]*buf[i];
+						}
+						System.out.println("detaudio "+Integer.toString(p)+" "+Integer.toString(len)+" "+Integer.toString(buf.length));
+						len+=buf.length;
+					}
+				});
+				mik.start();
+				Thread.sleep(6000);
+				mik.end();
+			} catch(Exception e) {
+			} finally {
+				BasketTracker.main.soundthread=null;
+			}
+		}
+	});
+	soundthread.start();
+	
     }
     public void annule(View view) {
       if (canvas.viewmode==canvas.VUE_JOUEURA || canvas.viewmode==canvas.VUE_JOUEURB) {

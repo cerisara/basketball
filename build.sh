@@ -9,6 +9,9 @@ export ANDJAR=/home/xtof/softs/adt-bundle-linux-x86_64-20140702/sdk/platforms/an
 export ANDBIN=/opt/android-sdk/build-tools/27.0.3/
 export ANDJAR=/opt/android-sdk/platforms/android-19/android.jar
 
+export ANDBIN=/usr/lib/android-sdk/build-tools/debian/
+export ANDJAR=/usr/lib/android-sdk/platforms/android-23/android.jar
+
 rm -rf out
 mkdir gen out
 
@@ -54,6 +57,5 @@ $ANDBIN/aapt add app.apk classes.dex
 # run it once in your HOME:
 # keytool -genkey -v -keystore PATH/TO/YOUR_RELEASE_KEY.keystore -alias YOUR_ALIAS_NAME -keyalg RSA -keysize 2048 -validity 10000
 
-jarsigner -verbose -keystore $HOME/apkkeystore -storepass $signerpass -keypass $signerpass -sigalg SHA1withRSA -digestalg SHA1 app.apk xtof54
-
+jarsigner -verbose -keystore $HOME/android.keystore -storepass $signerpass -keypass $signerpass -sigalg SHA1withRSA -digestalg SHA1 app.apk xtof54
 

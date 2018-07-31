@@ -4,7 +4,8 @@
       android:versionCode="1"
       android:versionName="1.0">
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-sdk android:minSdkVersion="11" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-sdk android:minSdkVersion="9" />
     <application android:label="BasketTracker"
         android:icon="@drawable/ic_launcher" >
         <activity android:name="BasketTracker"
