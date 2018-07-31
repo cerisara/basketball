@@ -1,6 +1,5 @@
 package fr.xtof.basketball;
 
-
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
@@ -297,23 +296,28 @@ public class BasketTracker extends FragmentActivity {
 	if (soundthread!=null) return;
 	soundthread = new Thread(new Runnable() {
 		public void run() {
+			final ArrayList<byte[]> allbufs = new ArrayList<byte[]>();
 			try {
 				Micro mik = new Micro(new AudioConsumer() {
-					int len=0;
 					public void consume(byte[] buf, double amplitude, double volume) {
-						int p=0;
-						for (int i=0;i<buf.length;i++) {
-							p+=buf[i]*buf[i];
-						}
-						System.out.println("detaudio "+Integer.toString(p)+" "+Integer.toString(len)+" "+Integer.toString(buf.length));
-						len+=buf.length;
+						allbufs.add(buf);
 					}
 				});
 				mik.start();
-				Thread.sleep(6000);
+				Thread.sleep(5000);
 				mik.end();
 			} catch(Exception e) {
 			} finally {
+				int l=0;
+				for (int i=0;i<allbufs.size();i++) l+=allbufs.get(i).length;
+				byte[] aa = new byte[l];
+				l=0;
+				for (int i=0;i<allbufs.size();i++) {
+					byte[] bb = allbufs.get(i);
+					for (int j=0;j<bb.length;j++) aa[l+j]=bb[j];
+					l+=bb.length;
+				}
+				FFT.properWAV(aa,0);
 				BasketTracker.main.soundthread=null;
 			}
 		}
