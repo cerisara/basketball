@@ -17,7 +17,7 @@ import fr.xtof.basketball.AudioConsumer;
  */
 final class Micro extends Thread {
   private static final String TAG = Micro.class.getName();
-  private static final int SAMPLE_RATE = 16000;
+  private static final int SAMPLE_RATE = 8000;
   private final AudioConsumer consumer;
   private boolean stop;
   private boolean stopped;

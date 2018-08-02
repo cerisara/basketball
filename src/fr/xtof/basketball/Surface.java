@@ -203,9 +203,9 @@ public class Surface extends View {
     super.onDraw(canvas);
 
     if (viewmode==VUE_SHOOTS) showPoints(canvas);
-    else if (viewmode==VUE_JOUEURA) claviernumerique(canvas,0);
-    else if (viewmode==VUE_JOUEURB) claviernumerique(canvas,1);
-    else if (viewmode==6) drawMenu(canvas);
+    //else if (viewmode==VUE_JOUEURA) claviernumerique(canvas,0);
+    //else if (viewmode==VUE_JOUEURB) claviernumerique(canvas,1);
+    //else if (viewmode==6) drawMenu(canvas);
   }
 
   private void drawMenu(Canvas canvas) {
@@ -318,6 +318,7 @@ public class Surface extends View {
     canvas.drawText(""+pts0,hmid/3,haut/2,pPaint);
     canvas.drawText(""+pts1,hmid+hmid/3,haut/2,pPaint);
 
+    if (false) {
     // buttons
     Paint tPaint = new Paint();
     tPaint.setColor(Color.BLACK);
@@ -351,7 +352,7 @@ public class Surface extends View {
     limits[2][1]=y3-len;
     limits[2][2]=hmid+len;
     limits[2][3]=y3+len;
-
+    }
   }
 }
 

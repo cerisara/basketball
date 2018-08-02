@@ -297,29 +297,39 @@ public class BasketTracker extends FragmentActivity {
 	soundthread = new Thread(new Runnable() {
 		public void run() {
 			final ArrayList<byte[]> allbufs = new ArrayList<byte[]>();
+			final int[] nbufs = {0};
 			try {
 				Micro mik = new Micro(new AudioConsumer() {
 					public void consume(byte[] buf, double amplitude, double volume) {
+						nbufs[0]++;
 						allbufs.add(buf);
 					}
 				});
+				msg("record start");
 				mik.start();
-				Thread.sleep(5000);
+				Thread.sleep(1000);
 				mik.end();
-			} catch(Exception e) {
-			} finally {
-				int l=0;
-				for (int i=0;i<allbufs.size();i++) l+=allbufs.get(i).length;
-				byte[] aa = new byte[l];
-				l=0;
-				for (int i=0;i<allbufs.size();i++) {
-					byte[] bb = allbufs.get(i);
-					for (int j=0;j<bb.length;j++) aa[l+j]=bb[j];
-					l+=bb.length;
+				msg("record finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
+
+				{
+					int l=0;
+					for (int i=0;i<allbufs.size();i++) l+=allbufs.get(i).length;
+					byte[] aa = new byte[l];
+					l=0;
+					for (int i=0;i<allbufs.size();i++) {
+						byte[] bb = allbufs.get(i);
+						for (int j=0;j<bb.length;j++) aa[l+j]=bb[j];
+						l+=bb.length;
+					}
+					msg("call FFT");
+					FFT.getFFT(aa);
+					msg("FFT finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
+					FFT.properWAV(aa,0);
+					msg("wav saved");
 				}
-				FFT.properWAV(aa,0);
 				BasketTracker.main.soundthread=null;
-			}
+			} catch(Exception e) {}
+			
 		}
 	});
 	soundthread.start();

@@ -1,8 +1,93 @@
 package fr.xtof.basketball;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
+
+import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class FFT {
+
+	private static double[] normaliza(double[] datos) {
+		double maximo = 0;
+		for (int k = 0; k < datos.length; k++) {
+			if (Math.abs(datos[k]) > maximo) {
+				maximo = Math.abs(datos[k]);
+			}
+		}
+		for (int k = 0; k < datos.length; k++) {
+			datos[k] = datos[k] / maximo;
+		}
+		return datos;
+	}
+
+	private static double[] aplicaHamming(double[] datos) {
+		final double A0 = 0.53836;
+		final double A1 = 1. - A0;
+		int Nbf = datos.length;
+		for (int k = 0; k < Nbf; k++) {
+			datos[k] = datos[k] * (A0 - A1 * Math.cos(2 * Math.PI * k / (Nbf - 1)));
+		}
+		return datos;
+	}
+
+	private static short[] byte2shortSlow(byte[] buffer) {
+		ByteBuffer bytes = ByteBuffer.wrap(buffer);
+		ShortBuffer shorts = bytes.asShortBuffer();
+		return shorts.array();
+	}
+
+	private static short[] byte2short(byte[] buf) {
+		short[] res = new short[buf.length/2];
+		for (int i=0;i<res.length;i++)
+			res[i]=(short)(((buf[i+i+1] & 0xFF) << 8) | (buf[i+i] & 0xFF));
+		return res;
+	}
+
+  public static void getFFT(byte[] buf0) {
+	final int nFFT = 512;
+	BasketTracker.main.msg("befconv");
+	short[] buf=byte2short(buf0);
+	BasketTracker.main.msg("aftconv");
+	try {
+
+		if (true) {
+			PrintWriter ff = new PrintWriter(new FileWriter("/mnt/sdcard/tt.txt"));
+			for (int i=0;i<buf.length;i++) ff.println(Short.toString(buf[i]));
+			ff.close();
+		}
+		BasketTracker.main.msg("txtsaved");
+		RealDoubleFFT fft = new RealDoubleFFT(nFFT);
+
+
+		// split into chunks of 10ms
+		// we have 16000 bytes per second, so 10ms = 0.01s = 160 bytes
+		// so we shift 160 bytes, but we compute the FFT over nFFT bytes
+		double[] x = new double[nFFT];
+		double[] y;
+		PrintWriter f = new PrintWriter(new FileWriter("/mnt/sdcard/fft.txt"));
+		int l=0;
+		while (l+x.length<=buf.length) {
+			for (int i=0;i<x.length;i++) {
+				x[i]=(double)buf[l+i];
+			}
+			l+=160; // toutes les 20ms à 8kHz
+			normaliza(x);
+			if (false) {
+				x = aplicaHamming(x);
+				fft.ft(x);
+				y = normaliza(x);
+				
+				String s="";
+				for (int i=0;i<y.length;i++) s+=Double.toString(y[i])+" ";
+				f.println(s);
+			}
+		}
+		f.close();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+  }
 
   int n, m;
 
@@ -79,13 +164,13 @@ public class FFT {
       }
   }
 
-  public static void properWAV(byte[] clipData, float newRecordingID){
+  public static void properWAV(byte[] clipData, int newRecordingID){
     try {
         long mySubChunk1Size = 16;
         int myBitsPerSample= 16;
         int myFormat = 1;
         long myChannels = 1;
-        long mySampleRate = 16000;
+        long mySampleRate = 8000;
         long myByteRate = mySampleRate * myChannels * myBitsPerSample/8;
         int myBlockAlign = (int) (myChannels * myBitsPerSample/8);
 
@@ -94,7 +179,7 @@ public class FFT {
         long myChunkSize = 36 + myChunk2Size;
 
         OutputStream os;        
-        os = new FileOutputStream(new File("/mnt/sdcard/OneFileAudio"+ newRecordingID+".wav"));
+        os = new FileOutputStream(new File("/mnt/sdcard/a"+ newRecordingID+".wav"));
         BufferedOutputStream bos = new BufferedOutputStream(os);
         DataOutputStream outFile = new DataOutputStream(bos);
 
