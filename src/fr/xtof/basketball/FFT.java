@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
-import ca.uol.aig.fftpack.RealDoubleFFT;
+// import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class FFT {
 
@@ -57,12 +57,12 @@ public class FFT {
 			ff.close();
 		}
 		BasketTracker.main.msg("txtsaved");
-		RealDoubleFFT fft = new RealDoubleFFT(nFFT);
+		//RealDoubleFFT fft = new RealDoubleFFT(nFFT);
 
 
 		// split into chunks of 10ms
-		// we have 16000 bytes per second, so 10ms = 0.01s = 160 bytes
-		// so we shift 160 bytes, but we compute the FFT over nFFT bytes
+		// we have 8000 short per second, so 10ms = 0.01s = 80 short
+		// so we shift 80 short, but we compute the FFT over nFFT short
 		double[] x = new double[nFFT];
 		double[] y;
 		PrintWriter f = new PrintWriter(new FileWriter("/mnt/sdcard/fft.txt"));
@@ -71,12 +71,13 @@ public class FFT {
 			for (int i=0;i<x.length;i++) {
 				x[i]=(double)buf[l+i];
 			}
-			l+=160; // toutes les 20ms à 8kHz
+			l+=80; // toutes les 20ms à 8kHz
 			normaliza(x);
-			if (false) {
+			if (true) {
 				x = aplicaHamming(x);
-				fft.ft(x);
-				y = normaliza(x);
+				y = FFTMary.computePowerSpectrum(x);
+				// fft.ft(x);
+				y = normaliza(y);
 				
 				String s="";
 				for (int i=0;i<y.length;i++) s+=Double.toString(y[i])+" ";
