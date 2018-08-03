@@ -1,5 +1,9 @@
 package fr.xtof.basketball;
 
+import android.media.MediaPlayer;
+import android.net.Uri;
+import java.io.File;
+
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.app.Dialog;
@@ -108,9 +112,13 @@ public class BasketTracker extends FragmentActivity {
     }
 
     public void setText(final String s) {
-      TextView t = (TextView)findViewById(R.id.textline);
-      t.setText(s);
-      t.invalidate();
+        main.runOnUiThread(new Runnable() {
+            public void run() {
+	      TextView t = (TextView)findViewById(R.id.textline);
+	      t.setText(s);
+	      t.invalidate();
+	    }
+	});
     }
 
     public static void msg(final String s) {
@@ -305,11 +313,11 @@ public class BasketTracker extends FragmentActivity {
 						allbufs.add(buf);
 					}
 				});
-				msg("record start");
+				main.setText("record start");
 				mik.start();
-				Thread.sleep(1000);
+				Thread.sleep(3000);
 				mik.end();
-				msg("record finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
+				main.setText("record finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
 
 				{
 					int l=0;
@@ -321,11 +329,13 @@ public class BasketTracker extends FragmentActivity {
 						for (int j=0;j<bb.length;j++) aa[l+j]=bb[j];
 						l+=bb.length;
 					}
-					msg("call FFT");
+					main.setText("call FFT");
 					FFT.getFFT(aa);
-					msg("FFT finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
-					FFT.properWAV(aa,0);
-					msg("wav saved");
+					main.setText("FFT finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
+					String wavfile = FFT.properWAV(aa,0);
+					main.setText("wav saved");
+				        MediaPlayer mp = MediaPlayer.create(main.getApplicationContext(), Uri.fromFile(new File(wavfile)));
+					mp.start();
 				}
 				BasketTracker.main.soundthread=null;
 			} catch(Exception e) {}

@@ -46,17 +46,14 @@ public class FFT {
 
   public static void getFFT(byte[] buf0) {
 	final int nFFT = 512;
-	BasketTracker.main.msg("befconv");
 	short[] buf=byte2short(buf0);
-	BasketTracker.main.msg("aftconv");
 	try {
 
-		if (true) {
+		if (false) {
 			PrintWriter ff = new PrintWriter(new FileWriter("/mnt/sdcard/tt.txt"));
 			for (int i=0;i<buf.length;i++) ff.println(Short.toString(buf[i]));
 			ff.close();
 		}
-		BasketTracker.main.msg("txtsaved");
 		//RealDoubleFFT fft = new RealDoubleFFT(nFFT);
 
 
@@ -165,7 +162,8 @@ public class FFT {
       }
   }
 
-  public static void properWAV(byte[] clipData, int newRecordingID){
+  public static String properWAV(byte[] clipData, int newRecordingID){
+    final String fich = "/mnt/sdcard/a"+newRecordingID+".wav";
     try {
         long mySubChunk1Size = 16;
         int myBitsPerSample= 16;
@@ -179,8 +177,8 @@ public class FFT {
         long myChunk2Size =  myDataSize * myChannels * myBitsPerSample/8;
         long myChunkSize = 36 + myChunk2Size;
 
-        OutputStream os;        
-        os = new FileOutputStream(new File("/mnt/sdcard/a"+ newRecordingID+".wav"));
+        OutputStream os;
+        os = new FileOutputStream(new File(fich));
         BufferedOutputStream bos = new BufferedOutputStream(os);
         DataOutputStream outFile = new DataOutputStream(bos);
 
@@ -205,6 +203,7 @@ public class FFT {
     } catch (IOException e) {
         e.printStackTrace();
     }
+    return fich;
 
 }
 
