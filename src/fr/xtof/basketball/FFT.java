@@ -44,7 +44,47 @@ public class FFT {
 		return res;
 	}
 
-  public static void getFFT(byte[] buf0) {
+  // method that correctly computes a full FFT, but it's a bit slow on smartphones.
+  // So I'm trying to replace it with simple ZCR
+  // TODO: ajouter une courbe d'amplitude normalisee au ZCR pour ameliorer la qualite de reco ?
+  public static float[] getFFT(byte[] buf0) {
+	short[] x=byte2short(buf0);
+	BasketTracker.main.setText("short ok");
+	// TODO : Mean removal
+	byte[] cross = new byte[x.length];
+	int lastSign = 0; // pos
+	for (int i=0;i<x.length;i++) {
+		if (lastSign==0 && x[i] < 0) {
+			cross[i] = 1;
+			lastSign=1;
+		} else if (lastSign==1 && x[i] > 0) {
+			cross[i] = 1;
+			lastSign=0;
+		} else cross[i] = 0;
+	}
+	BasketTracker.main.setText("sign ok");
+	int winlen = 160; // 20 ms pour calculer un ZCR
+	float[] zcr = new float[x.length-winlen+1];
+	zcr[0]=(float)0;
+	for (int i=0;i<winlen;i++) zcr[0]+=(float)cross[i];
+	for (int i=winlen;i<x.length;i++) zcr[i-winlen+1] = zcr[i-winlen] + (float)cross[i] - (float)cross[i-winlen];
+	BasketTracker.main.setText("counts ok");
+	for (int i=0;i<zcr.length;i++) zcr[i]/=(float)winlen;
+
+	if (true) {
+		try {
+			// because we use a running estimate of ZCR, we don't need to split into chunks
+			PrintWriter f = new PrintWriter(new FileWriter("/mnt/sdcard/zcr.txt"));
+			for (int i=0;i<zcr.length;i++) f.println(Float.toString(zcr[i]));
+			f.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	return zcr;
+  }
+
+  public static void getFFTFull(byte[] buf0) {
 	final int nFFT = 512;
 	short[] buf=byte2short(buf0);
 	try {

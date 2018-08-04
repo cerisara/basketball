@@ -330,7 +330,7 @@ public class BasketTracker extends FragmentActivity {
 						l+=bb.length;
 					}
 					main.setText("call FFT");
-					FFT.getFFT(aa);
+					float[] z = FFT.getFFT(aa);
 					main.setText("FFT finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
 					String wavfile = FFT.properWAV(aa,0);
 					main.setText("wav saved");
