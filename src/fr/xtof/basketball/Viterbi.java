@@ -2,7 +2,7 @@ package fr.xtof.basketball;
 
 public class Viterbi {
 	private final static float scnull = -9999;
-	private final static float cins = 1;
+	private final static float cins = 1.1f;
 
 	private static float dist(float a, float b) {
 		float d=a-b;
@@ -12,8 +12,9 @@ public class Viterbi {
 		float[][] sc = new float[2][y.length+1]; // le 0 correspond à l'etat initial, avant les obs
 		for (int i=1;i<sc[0].length;i++) sc[0][i]=scnull;
 		sc[0][0]=0;
-		int cur = 0;
+		int cur = 1;
 		for (int t=1;t<=x.length;t++) {
+			sc[cur][0] = sc[1-cur][0] + cins;
 			for (int j=1;j<=y.length;j++) {
 				// allowed transitions = all previous states
 				// the current cost is dist(x[t-1],y[j])
@@ -24,11 +25,14 @@ public class Viterbi {
 					if (sc[1-cur][k]==scnull) break;
 					float v = sc[1-cur][k] + (j-1-k)*cins;
 					if (v<sc[cur][j]) sc[cur][j]=v;
-				System.out.println("EE" +Integer.toString(t)+" "+Integer.toString(j)+" "+Float.toString(sc[cur][j]));
 				}
 				sc[cur][j] += dist(x[t-1],y[j-1]);
-				System.out.println(Integer.toString(t)+" "+Integer.toString(j)+" "+Float.toString(sc[cur][j]));
 			}
+			/*
+			for (int k=0;k<sc[cur].length;k++)
+				System.out.print(Float.toString(sc[cur][k])+" ");
+			System.out.println();
+			*/
 			cur=1-cur;
 		}
 		return sc[1-cur][y.length];
