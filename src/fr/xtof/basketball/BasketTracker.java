@@ -301,6 +301,32 @@ public class BasketTracker extends FragmentActivity {
       canvas.invalidate();
     }
     public void chrono(View view) {
+	    record(new Runnable() {
+		    public void run() {
+			    int ntrain = sounds.size();
+			    if (ntrain>=2) {
+				    float bsc = Viterbi.viterbi(cursound,sounds.get(0));
+				    int bi = 0;
+				    String s = Float.toString(bsc)+" ";
+				    for (int i=1;i<ntrain;i++) {
+					    float sc = Viterbi.viterbi(cursound,sounds.get(i));
+					    s+=Float.toString(sc)+" ";
+					    if (sc<bsc) {
+						    bi=i; bsc=sc;
+					    }
+				    }
+				    setText(s);
+				    msg("best sound "+Integer.toString(bi));
+			    } else {
+				    sounds.add(cursound.clone());
+				    msg("N known sounds "+Integer.toString(sounds.size()));
+			    }
+		    }
+	    });
+    }
+    private ArrayList<float[]> sounds = new ArrayList<float[]>();
+    private float[] cursound = null;
+    void record(final Runnable fct) {
 	if (soundthread!=null) return;
 	soundthread = new Thread(new Runnable() {
 		public void run() {
@@ -331,11 +357,13 @@ public class BasketTracker extends FragmentActivity {
 					}
 					main.setText("call FFT");
 					float[] z = FFT.getFFT(aa);
+					main.cursound = z;
 					main.setText("FFT finished "+Integer.toString(allbufs.size())+" "+Integer.toString(nbufs[0]));
-					String wavfile = FFT.properWAV(aa,0);
-					main.setText("wav saved");
-				        MediaPlayer mp = MediaPlayer.create(main.getApplicationContext(), Uri.fromFile(new File(wavfile)));
-					mp.start();
+					fct.run();
+					// String wavfile = FFT.properWAV(aa,0);
+					// main.setText("wav saved");
+				        // MediaPlayer mp = MediaPlayer.create(main.getApplicationContext(), Uri.fromFile(new File(wavfile)));
+					// mp.start();
 				}
 				BasketTracker.main.soundthread=null;
 			} catch(Exception e) {}
@@ -343,7 +371,6 @@ public class BasketTracker extends FragmentActivity {
 		}
 	});
 	soundthread.start();
-	
     }
     public void annule(View view) {
       if (canvas.viewmode==canvas.VUE_JOUEURA || canvas.viewmode==canvas.VUE_JOUEURB) {
