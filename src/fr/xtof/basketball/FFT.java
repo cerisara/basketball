@@ -64,12 +64,14 @@ public class FFT {
 	}
 	BasketTracker.main.setText("sign ok");
 	int winlen = 160; // 20 ms pour calculer un ZCR
-	float[] zcr = new float[x.length-winlen+1];
-	zcr[0]=(float)0;
-	for (int i=0;i<winlen;i++) zcr[0]+=(float)cross[i];
-	for (int i=winlen;i<x.length;i++) zcr[i-winlen+1] = zcr[i-winlen] + (float)cross[i] - (float)cross[i-winlen];
-	BasketTracker.main.setText("counts ok");
+	int winshift = 80; // 10 ms between 2 frames
+	float[] zcr = new float[(x.length-winlen+1)/winshift];
+	for (int i=0;i<zcr.length;i++) {
+		zcr[i]=0;
+		for (int j=0;j<winlen;j++) zcr[i]+=(float)cross[j+i*winshift];
+	}
 	for (int i=0;i<zcr.length;i++) zcr[i]/=(float)winlen;
+	BasketTracker.main.setText("counts ok");
 
 	if (true) {
 		try {
