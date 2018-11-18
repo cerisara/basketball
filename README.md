@@ -28,3 +28,30 @@ Au milieu se trouvent les symboles du shoot à 2pts, 3pts et du lancer-franc.
 
 ![](ko2.png)
 
+## Extensions
+
+L'utilisation de l'appli avec les doigts prend trop de temps lorsqu'on est en pleine action dans un match.
+Pour faciliter l'enregistrement des stats, la prochaine version fonctionnera par la voix:
+l'idée sera d'appuyer sur un gros bouton pendant que l'on parle, et les séquences ainsi enregistrées seront
+taggées par un timestamp et transcrites automatiquement si possible en local en temps réel sinon
+après le match sur un PC (l'idée est bien de développer un système de reconnaissance de la parole léger qui
+reste entièrement local et permet de reconnaître des séquences simples : cf. JTrans).
+
+Les séquences à reconnaître seront basiques, selon la grammaire suivante:
+
+```
+[non] [(3-points | lancer-franc | contre)] [raté] numéro_joueur
+```
+
+Le "non" optionnel du début permet d'annuler la séquence précédente et de la remplacer par le reste de la séquence.
+
+## TODO
+
+- faire enregistrer les mots-clefs de base en local
+- démultiplier les exemples en ajoutant du bruit, des filtres
+- calculer les MFCC de toutes ces séquences
+- exporter les fichiers MFCC pour l'apprentissage
+- sur un PC, entraîner un LSTM + linear + softmax: récupérer les paramètres
+- écrire l'inférence pour le même en pure java-android avec ces paramètres
+
+
