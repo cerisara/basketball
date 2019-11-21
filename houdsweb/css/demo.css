@@ -19,10 +19,12 @@ fieldset,img {
 ol,ul {
 	list-style:none;
 }
+/*
 h1,h2,h3,h4,h5,h6 {
 	font-size:100%;
 	font-weight:normal;
 }
+*/
 /* General Demo Style */
 body{
 	font-family: Constantia, Palatino, "Palatino Linotype", "Palatino LT STD", Georgia, serif;
