@@ -1,0 +1,6 @@
+https://resultats.ffbb.com/championnat/b5e6211eda83.html?r=200000002775683&d=200000002851801&p=4
+
+https://resultats.ffbb.com/championnat/rencontres/b5e6211eda83b5e6212003d94.html
+
+cette adresse avec les prochains matchs est construite à partir de la premiere, en convertissant les r,d,p decimaux en r,d,p hexa
+
